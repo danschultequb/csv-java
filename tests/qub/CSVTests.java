@@ -51,6 +51,15 @@ public interface CSVTests
                 });
             });
 
+            runner.testGroup("parse(ByteReadStream)", () ->
+            {
+                runner.test("with null", (Test test) ->
+                {
+                    test.assertThrows(() -> CSV.parse((ByteReadStream)null),
+                        new PreConditionFailure("byteReadStream cannot be null."));
+                });
+            });
+
             runner.testGroup("parse(String)", () ->
             {
                 final Action2<String,Throwable> parseErrorTest = (String text, Throwable expected) ->
@@ -68,7 +77,8 @@ public interface CSVTests
                 {
                     runner.test("with " + Strings.escapeAndQuote(text), (Test test) ->
                     {
-                        test.assertEqual(expected, CSV.parse(text).await());
+                        final CSVDocument document = CSV.parse(text).await();
+                        test.assertEqual(expected, document);
                     });
                 };
 
@@ -81,6 +91,14 @@ public interface CSVTests
                         CSVRow.create("   ")));
                 parseTest.run(
                     "\n",
+                    CSVDocument.create(
+                        CSVRow.create()));
+                parseTest.run(
+                    "\r",
+                    CSVDocument.create(
+                        CSVRow.create("\r")));
+                parseTest.run(
+                    "\r\n",
                     CSVDocument.create(
                         CSVRow.create()));
                 parseTest.run(
@@ -110,6 +128,12 @@ public interface CSVTests
                         CSVRow.create("c")));
                 parseTest.run(
                     "a,b,\nc\nd e",
+                    CSVDocument.create(
+                        CSVRow.create("a", "b", ""),
+                        CSVRow.create("c"),
+                        CSVRow.create("d e")));
+                parseTest.run(
+                    "a,b,\r\nc\nd e",
                     CSVDocument.create(
                         CSVRow.create("a", "b", ""),
                         CSVRow.create("c"),

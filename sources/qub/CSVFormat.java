@@ -49,19 +49,30 @@ public class CSVFormat
         final CharacterList builder = CharacterList.create();
         builder.add('{');
 
-        builder.addAll(Strings.quote("cellSeparator"));
-        builder.add(':');
-        builder.addAll(Strings.escapeAndQuote(this.cellSeparator));
-
-        builder.add(',');
-
-        builder.addAll(Strings.quote("quote"));
-        builder.add(':');
-        builder.addAll(Strings.escapeAndQuote(this.quote));
+        CSVFormat.addProperty(builder, "cellSeparator", Characters.toString(this.cellSeparator));
+        CSVFormat.addProperty(builder, "quote", Characters.toString(this.quote));
 
         builder.add('}');
 
         return builder.toString(true);
+    }
+
+    private static void addProperty(CharacterList list, String propertyName, String propertyValue)
+    {
+        PreCondition.assertNotNull(list, "list");
+        PreCondition.assertNotNullAndNotEmpty(propertyName, "propertyName");
+        PreCondition.assertNotNull(propertyValue, "propertyValue");
+
+        if (!Strings.isNullOrEmpty(propertyValue))
+        {
+            if (!list.endsWith('{'))
+            {
+                list.add(',');
+            }
+            list.addAll(Strings.escapeAndQuote(propertyName));
+            list.add(':');
+            list.addAll(Objects.toString(Strings.escapeAndQuote(propertyValue)));
+        }
     }
 
     @Override

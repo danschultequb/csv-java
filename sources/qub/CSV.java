@@ -55,6 +55,7 @@ public interface CSV
             CSVRow currentRow = CSVRow.create();
             final CharacterList currentCell = CharacterList.create();
             boolean currentCellIsQuoted = false;
+            boolean previousCharacterWasCarriageReturn = false;
             while (characters.hasCurrent())
             {
                 final char currentCharacter = characters.takeCurrent();
@@ -68,6 +69,15 @@ public interface CSV
                     {
                         currentCellIsQuoted = false;
                     }
+                    previousCharacterWasCarriageReturn = false;
+                }
+                else if (currentCharacter == '\r')
+                {
+                    if (currentCellIsQuoted || previousCharacterWasCarriageReturn)
+                    {
+                        currentCell.add(currentCharacter);
+                    }
+                    previousCharacterWasCarriageReturn = true;
                 }
                 else if (currentCharacter == '\n')
                 {
@@ -85,6 +95,7 @@ public interface CSV
                         result.addRow(currentRow);
                         currentRow = CSVRow.create();
                     }
+                    previousCharacterWasCarriageReturn = false;
                 }
                 else if (currentCharacter == ',')
                 {
@@ -97,16 +108,23 @@ public interface CSV
                         currentRow.addCell(currentCell.toString(true));
                         currentCell.clear();
                     }
+                    previousCharacterWasCarriageReturn = false;
                 }
                 else
                 {
                     currentCell.add(currentCharacter);
+                    previousCharacterWasCarriageReturn = false;
                 }
             }
 
             if (currentCellIsQuoted)
             {
                 throw new ParseException("Missing closing double-quote ('\"').");
+            }
+
+            if (previousCharacterWasCarriageReturn)
+            {
+                currentCell.add('\r');
             }
 
             if (currentCell.any() || currentRow.getCellCount() > 0)
