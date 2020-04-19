@@ -85,7 +85,7 @@ public class CSVDocument
     {
         PreCondition.assertNotNull(format, "format");
 
-        final InMemoryCharacterStream writeStream = new InMemoryCharacterStream();
+        final InMemoryCharacterStream writeStream = InMemoryCharacterStream.create();
         this.toString(writeStream, format).await();
         return writeStream.getText().await();
     }

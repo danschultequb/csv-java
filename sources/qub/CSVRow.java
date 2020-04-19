@@ -97,7 +97,7 @@ public class CSVRow
     {
         PreCondition.assertNotNull(format, "format");
 
-        final InMemoryCharacterStream stream = new InMemoryCharacterStream();
+        final InMemoryCharacterStream stream = InMemoryCharacterStream.create();
         this.toString(stream, format).await();
         return stream.getText().await();
     }

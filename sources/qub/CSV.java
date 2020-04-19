@@ -9,15 +9,9 @@ public interface CSV
     {
         PreCondition.assertNotNull(file, "file");
 
-        return Result.create(() ->
-        {
-            CSVDocument result;
-            try (final ByteReadStream readStream = new BufferedByteReadStream(file.getContentByteReadStream().await()))
-            {
-                result = CSV.parse(readStream).await();
-            }
-            return result;
-        });
+        return Result.createUsing(
+            () -> ByteReadStream.buffer(file.getContentReadStream().await()),
+            (ByteReadStream byteReadStream) -> CSV.parse(byteReadStream).await());
     }
 
     static Result<CSVDocument> parse(ByteReadStream byteReadStream)
@@ -25,7 +19,14 @@ public interface CSV
         PreCondition.assertNotNull(byteReadStream, "byteReadStream");
         PreCondition.assertNotDisposed(byteReadStream, "byteReadStream");
 
-        return CSV.parse(byteReadStream.asCharacterReadStream());
+        return CSV.parse((CharacterReadStream)CharacterReadStream.create(byteReadStream));
+    }
+
+    static Result<CSVDocument> parse(CharacterReadStream characterReadStream)
+    {
+        PreCondition.assertNotNull(characterReadStream, "characterReadStream");
+
+        return CSV.parse(CharacterReadStream.iterate(characterReadStream));
     }
 
     static Result<CSVDocument> parse(String text)
