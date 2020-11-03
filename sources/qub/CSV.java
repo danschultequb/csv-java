@@ -10,7 +10,7 @@ public interface CSV
         PreCondition.assertNotNull(file, "file");
 
         return Result.createUsing(
-            () -> ByteReadStream.buffer(file.getContentReadStream().await()),
+            () -> ByteReadStream.buffer(file.getContentsReadStream().await()),
             (ByteReadStream byteReadStream) -> CSV.parse(byteReadStream).await());
     }
 
@@ -49,7 +49,7 @@ public interface CSV
 
         return Result.create(() ->
         {
-            characters.ensureHasStarted();
+            characters.start();
 
             final CSVDocument result = CSVDocument.create();
 

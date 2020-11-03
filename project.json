@@ -1,13 +1,13 @@
 {
   "publisher": "qub",
   "project": "csv-java",
-  "version": "19",
+  "version": "21",
   "java": {
     "dependencies": [
       {
         "publisher": "qub",
         "project": "lib-java",
-        "version": "51"
+        "version": "86"
       }
     ]
   }
