@@ -16,7 +16,7 @@ public interface CSVTests
 
                 runner.test("with non-existing file", (Test test) ->
                 {
-                    final InMemoryFileSystem fileSystem = InMemoryFileSystem.create(test.getClock());
+                    final InMemoryFileSystem fileSystem = InMemoryFileSystem.create();
                     fileSystem.createRoot("/").await();
                     final File file = fileSystem.getFile("/file.csv").await();
 
@@ -26,7 +26,7 @@ public interface CSVTests
 
                 runner.test("with empty file", (Test test) ->
                 {
-                    final InMemoryFileSystem fileSystem = InMemoryFileSystem.create(test.getClock());
+                    final InMemoryFileSystem fileSystem = InMemoryFileSystem.create();
                     fileSystem.createRoot("/").await();
                     final File file = fileSystem.createFile("/file.csv").await();
 
@@ -37,7 +37,7 @@ public interface CSVTests
 
                 runner.test("with non-empty file", (Test test) ->
                 {
-                    final InMemoryFileSystem fileSystem = InMemoryFileSystem.create(test.getClock());
+                    final InMemoryFileSystem fileSystem = InMemoryFileSystem.create();
                     fileSystem.createRoot("/").await();
                     final File file = fileSystem.createFile("/file.csv").await();
                     file.setContentsAsString("a,b,c\nd,e,f\ng,h,i\n").await();
